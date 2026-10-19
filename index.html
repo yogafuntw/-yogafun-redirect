@@ -1,15 +1,96 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Yogafun 課程線上預約</title>
-  <style>
-    html, body { margin: 0; height: 100%; }
-    iframe { border: 0; width: 100%; height: 100%; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yogafun 課程線上預約</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft JhengHei", sans-serif; background: #f4f7f9; padding: 20px; }
+  .card { max-width: 360px; margin: 40px auto; background: #fff; border-radius: 16px;
+          padding: 28px 22px; text-align: center; box-shadow: 0 5px 25px rgba(0,0,0,.1); }
+  .icon { width: 48px; height: 48px; border-radius: 50%; background: #fff3cd;
+          display: flex; align-items: center; justify-content: center; font-size: 24px;
+          margin: 0 auto 14px; }
+  h2 { font-size: 16px; margin-bottom: 8px; color: #333; }
+  p { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 16px; }
+  .steps { text-align: left; background: #f8f7ff; border-radius: 10px; padding: 14px;
+           margin-bottom: 18px; font-size: 13px; color: #444; line-height: 1.8; }
+  .steps b { color: #534AB7; }
+  .btn { display: block; width: 100%; padding: 13px; border: none; border-radius: 10px;
+         font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 10px; }
+  .btn-primary { background: #534AB7; color: #fff; text-decoration: none; display: block; }
+  .btn-primary.copied { background: #2e7d32; }
+  .btn-try { background: #eee; color: #666; text-decoration: none; display: block; font-weight: 400; font-size: 13px; }
+  .loading { max-width: 360px; margin: 80px auto; text-align: center; color: #999; font-size: 14px; }
+  .url-box { display: none; margin-bottom: 14px; }
+  .url-box.show { display: block; }
+  .url-box input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;
+                    font-size: 12px; color: #534AB7; text-align: center; background: #f8f7ff; }
+  .url-hint { font-size: 11px; color: #999; margin-top: 6px; }
+</style>
 </head>
 <body>
-<iframe src="https://script.google.com/macros/s/AKfycbwHOYv-uy5E-mScUw-zivt0q_lV792VzmJH5ZKaDp-pGBpvGNOFOTswIXif6QLNhaFb/exec"></iframe>
+
+  <div class="loading" id="loading">載入中...</div>
+
+  <div class="card" id="guide" style="display:none">
+    <div class="icon">⚠️</div>
+    <h2>請改用外部瀏覽器開啟</h2>
+    <p>偵測到您是用 Facebook / Instagram 內建瀏覽器開啟，這個環境常常無法正常顯示預約頁面，請務必依照下方步驟操作：</p>
+    <div class="steps">
+      <div><b>1.</b> 點畫面右上角「⋯」</div>
+      <div><b>2.</b> 選擇「使用外部瀏覽器開啟」（或「在 Safari 開啟」）</div>
+    </div>
+    <button class="btn btn-primary" id="copyBtn" style="border:none;">📋 複製連結，改用 Safari 開啟</button>
+
+    <div class="url-box" id="urlBox">
+      <input type="text" id="urlText" readonly onclick="this.select();">
+      <div class="url-hint">👆 如果上面按鈕沒反應，點這個網址框把它選取起來，手動複製</div>
+    </div>
+
+    <a class="btn btn-try" id="directLink" href="#">仍想直接嘗試前往（可能無法開啟）</a>
+  </div>
+
+<script>
+  var directUrl = "https://script.google.com/macros/s/AKfycbwHOYv-uy5E-mScUw-zivt0q_lV792VzmJH5ZKaDp-pGBpvGNOFOTswIXif6QLNhaFb/exec?direct=1";
+
+  var ua = navigator.userAgent || '';
+  var isAndroid = /Android/i.test(ua);
+  var isFB = /FBAN|FBAV/i.test(ua);
+  var isMessenger = /FB_IAB|MessengerForiOS/i.test(ua);
+  var isIG = /Instagram/i.test(ua);
+  var isInApp = isFB || isMessenger || isIG;
+
+  document.getElementById('directLink').href = directUrl;
+
+  if (!isInApp || isAndroid) {
+    location.href = directUrl;
+  } else {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('guide').style.display = 'block';
+
+    var urlBox = document.getElementById('urlBox');
+    var urlText = document.getElementById('urlText');
+    urlText.value = directUrl;
+
+    document.getElementById('copyBtn').onclick = function () {
+      var btn = this;
+      function showCopied() {
+        btn.textContent = '✅ 已複製！請至 Safari 貼上網址開啟';
+        btn.classList.add('copied');
+        urlBox.classList.add('show');
+      }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(directUrl).then(showCopied).catch(function () {
+          urlBox.classList.add('show');
+        });
+      } else {
+        urlBox.classList.add('show');
+      }
+    };
+  }
+</script>
+
 </body>
 </html>
